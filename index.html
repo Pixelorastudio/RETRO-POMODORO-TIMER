@@ -180,10 +180,10 @@
 
         #timer {
             font-family: 'VT323', monospace;
-            font-size: 5.2rem;
+            font-size: 4.4rem;
             color: var(--cream);
             text-shadow: 0 0 12px #fef9c3aa, 0 0 28px #fbbf2466;
-            letter-spacing: 8px;
+            letter-spacing: 5px;
             line-height: 1;
         }
 
@@ -345,6 +345,7 @@
             .crt-screen { padding: 18px 16px; }
             .layout { grid-template-columns: 1fr; }
             .col-left, .col-right, .header-full, .footer-full { grid-column: 1; }
+            .col-right { margin-top: 16px; }
             .title { font-size: 1.2rem; letter-spacing: 2px; }
             #timer { font-size: 4rem; }
             #mode  { font-size: 0.7rem; }
@@ -390,12 +391,12 @@
                     </div>
                     <div class="settings">
                         <div class="control-group">
-                            <label>FOCUS (MIN)</label>
-                            <input type="number" id="focusInput" value="25" min="5" max="60">
+                            <label>FOCUS (H:MM)</label>
+                            <input type="text" id="focusInput" value="0:25" maxlength="5" placeholder="0:25" style="width:100%;background:#0a0715;border:2px solid #3b2d5e;color:var(--cream);font-family:'VT323',monospace;font-size:1.6rem;padding:8px;text-align:center;">
                         </div>
                         <div class="control-group">
-                            <label>BREAK (MIN)</label>
-                            <input type="number" id="breakInput" value="5" min="1" max="30">
+                            <label>BREAK (H:MM)</label>
+                            <input type="text" id="breakInput" value="0:05" maxlength="5" placeholder="0:05" style="width:100%;background:#0a0715;border:2px solid #3b2d5e;color:var(--cream);font-family:'VT323',monospace;font-size:1.6rem;padding:8px;text-align:center;">
                         </div>
                     </div>
                 </div>
@@ -411,13 +412,15 @@
                     </div>
 
                     <div class="sessions-panel">
-                        <div style="font-size:0.8rem;color:#9d7ec9;">SESSIONS COMPLETED</div>
-                        <div class="session-dots" id="sessionDots">
-                            <div class="session-dot"></div>
-                            <div class="session-dot"></div>
-                            <div class="session-dot"></div>
-                            <div class="session-dot"></div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div style="font-size:0.8rem;color:#9d7ec9;">SESSIONS</div>
+                            <div style="display:flex;align-items:center;gap:6px;">
+                                <span style="font-size:0.7rem;color:#6b5a8a;">GOAL</span>
+                                <input type="number" id="sessionGoalInput" value="4" min="1" max="10"
+                                    style="width:48px;background:#0a0715;border:2px solid #3b2d5e;color:var(--cream);font-family:'VT323',monospace;font-size:1.2rem;padding:4px 6px;text-align:center;">
+                            </div>
                         </div>
+                        <div class="session-dots" id="sessionDots"></div>
                         <div style="font-size:0.7rem;color:#6b5a8a;margin-top:8px;" id="sessionCount">0 / 4 POMODOROS</div>
                     </div>
 
@@ -494,8 +497,8 @@
         const sessionDots  = document.getElementById('sessionDots');
         const sessionCount = document.getElementById('sessionCount');
 
-        let focusTime = 25, breakTime = 5;
-        let timeLeft = focusTime * 60;
+        let focusTime = 25 * 60, breakTime = 5 * 60;
+        let timeLeft = focusTime;
         let isRunning = false, isFocusMode = true;
         let timerInterval = null;
         let audioContext = null;
@@ -503,6 +506,7 @@
         let musicNodes = null;
         let masterGain = null;
         let completedSessions = 0;
+        let totalSessions = 4;
 
         function initAudio() {
             if (!audioContext) {
@@ -624,8 +628,24 @@
             }, 180);
         }
 
+        function parseHMM(val) {
+            const parts = val.trim().split(':');
+            if (parts.length === 2) {
+                const h = parseInt(parts[0]) || 0;
+                const m = parseInt(parts[1]) || 0;
+                return (h * 3600) + (m * 60);
+            }
+            return (parseInt(val) || 25) * 60;
+        }
+
         function formatTime(s) {
-            return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+            const h   = Math.floor(s / 3600);
+            const m   = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            if (h > 0) {
+                return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+            }
+            return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
         }
 
         function updateDisplay() {
@@ -642,10 +662,19 @@
         }
 
         function updateSessionDots() {
-            document.querySelectorAll('.session-dot').forEach((d, i) =>
-                d.classList.toggle('done', i < completedSessions % 4)
-            );
-            sessionCount.textContent = `${completedSessions} / 4 POMODOROS`;
+            const container = document.getElementById('sessionDots');
+            container.innerHTML = '';
+            for (let i = 0; i < totalSessions; i++) {
+                const d = document.createElement('div');
+                d.className = 'session-dot' + (i < completedSessions ? ' done' : '');
+                container.appendChild(d);
+            }
+            sessionCount.textContent = `${completedSessions} / ${totalSessions} POMODOROS`;
+            if (completedSessions >= totalSessions && totalSessions > 0) {
+                showNotification("✿ ALL DONE! ✿", "#6ee7b7");
+                completedSessions = 0;
+                setTimeout(() => updateSessionDots(), 2400);
+            }
         }
 
         function showNotification(text, color) {
@@ -660,12 +689,12 @@
             playRetroBeep();
             isFocusMode = !isFocusMode;
             if (isFocusMode) {
-                timeLeft = focusTime * 60;
+                timeLeft = focusTime;
                 showNotification("✿ FOCUS TIME!", "#f9a8d4");
             } else {
                 completedSessions++;
                 updateSessionDots();
-                timeLeft = breakTime * 60;
+                timeLeft = breakTime;
                 showNotification("✦ BREAK TIME!", "#7dd3fc");
             }
             updateDisplay();
@@ -701,14 +730,18 @@
             isRunning = false;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
-            timeLeft = isFocusMode ? focusTime * 60 : breakTime * 60;
+            timeLeft = isFocusMode ? focusTime : breakTime;
             updateDisplay();
         }
 
         function applySettings() {
-            focusTime = parseInt(focusInput.value) || 25;
-            breakTime = parseInt(breakInput.value) || 5;
+            focusTime = parseHMM(focusInput.value) || 25 * 60;
+            breakTime = parseHMM(breakInput.value) || 5  * 60;
+            const g = parseInt(document.getElementById('sessionGoalInput').value) || 4;
+            totalSessions = Math.min(Math.max(g, 1), 10);
+            document.getElementById('sessionGoalInput').value = totalSessions;
             if (!isRunning) resetTimer();
+            updateSessionDots();
         }
 
         function setupListeners() {
@@ -717,6 +750,7 @@
             resetBtn.addEventListener('click', resetTimer);
             focusInput.addEventListener('change', applySettings);
             breakInput.addEventListener('change', applySettings);
+            document.getElementById('sessionGoalInput').addEventListener('change', applySettings);
             musicToggle.addEventListener('click', toggleMusic);
             volumeSlider.addEventListener('input', updateVolume);
             document.addEventListener('keydown', e => {
@@ -727,7 +761,7 @@
         }
 
         function init() {
-            timeLeft = focusTime * 60;
+            timeLeft = focusTime;
             updateDisplay();
             updateSessionDots();
             setupListeners();
