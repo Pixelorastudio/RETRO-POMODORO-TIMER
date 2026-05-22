@@ -479,6 +479,11 @@
                         <div>SPACE / K — play/pause</div>
                         <div>R — reset</div>
                         <div>M — toggle music</div>
+                        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #2e2250;">
+                            <div class="hint-title" style="margin-bottom:6px;">NOTIFICATIONS</div>
+                            <button id="notifBtn" onclick="requestNotificationPermission()" style="font-size:0.55rem;padding:6px 10px;width:100%;border-color:#6b5a8a;color:#6b5a8a;">ENABLE ALERTS</button>
+                            <div id="notifStatus" style="font-size:0.6rem;color:#6b5a8a;margin-top:5px;text-align:center;"></div>
+                        </div>
                     </div>
                 </div>
  
@@ -690,8 +695,26 @@
             }, 180);
         }
  
+        function parseHMM(val) {
+            const parts = val.trim().split(':');
+            if (parts.length === 2) {
+                const h = parseInt(parts[0]) || 0;
+                const m = parseInt(parts[1]) || 0;
+                const total = (h * 3600) + (m * 60);
+                return total > 0 ? total : 60; // minimum 1 minute
+            }
+            const mins = parseInt(val) || 1;
+            return mins * 60;
+        }
+ 
         function formatTime(s) {
-            return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+            const h   = Math.floor(s / 3600);
+            const m   = Math.floor((s % 3600) / 60);
+            const sec = s % 60;
+            if (h > 0) {
+                return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+            }
+            return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
         }
  
         function updateDisplay() {
@@ -705,6 +728,10 @@
                 modeEl.style.color = "#7dd3fc";
                 modeEl.style.textShadow = "0 0 10px #7dd3fc88";
             }
+            // update tab title so user can see countdown while in another tab
+            if (isRunning) {
+                document.title = `${isFocusMode ? '🍅' : '☕'} ${formatTime(timeLeft)} — RETRO POMO`;
+            }
         }
  
         function showCompletionOverlay() {
@@ -714,8 +741,10 @@
             endTime = null;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
+            resetTabTitle();
             document.getElementById('completionCount').textContent = totalSessions;
             document.getElementById('completionOverlay').classList.add('show');
+            sendPushNotification('✿ All Done!', `You crushed all ${totalSessions} sessions! Great work today.`);
             playRetroBeep();
             setTimeout(() => playRetroBeep(), 400);
             setTimeout(() => playRetroBeep(), 800);
@@ -749,12 +778,14 @@
             if (isFocusMode) {
                 timeLeft = focusTime;
                 showNotification("✿ FOCUS TIME!", "#f9a8d4");
+                sendPushNotification('✿ Focus Time!', 'Break is over — back to work!');
             } else {
                 completedSessions++;
                 updateSessionDots();
                 if (completedSessions >= totalSessions) return;
                 timeLeft = breakTime;
                 showNotification("✦ BREAK TIME!", "#7dd3fc");
+                sendPushNotification('☕ Break Time!', 'Session done — take a breather!');
             }
             updateDisplay();
         }
@@ -794,6 +825,7 @@
             endTime = null;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
+            resetTabTitle();
             updateDisplay();
         }
  
@@ -804,6 +836,7 @@
             endTime = null;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
+            resetTabTitle();
             timeLeft = isFocusMode ? focusTime : breakTime;
             updateDisplay();
         }
@@ -859,11 +892,69 @@
             });
         }
  
+        /* ── BROWSER NOTIFICATIONS ── */
+        function updateNotifStatus() {
+            const el = document.getElementById('notifStatus');
+            const btn = document.getElementById('notifBtn');
+            if (!el || !('Notification' in window)) return;
+            if (Notification.permission === 'granted') {
+                el.textContent = '✓ ALERTS ON';
+                el.style.color = '#6ee7b7';
+                btn.style.display = 'none';
+            } else if (Notification.permission === 'denied') {
+                el.textContent = '✗ BLOCKED IN BROWSER';
+                el.style.color = '#fb923c';
+                btn.style.display = 'none';
+            } else {
+                el.textContent = 'NOT YET ENABLED';
+                btn.style.display = 'block';
+            }
+        }
+ 
+        function requestNotificationPermission() {
+            if (!('Notification' in window)) return;
+            if (Notification.permission === 'granted') { updateNotifStatus(); return; }
+            if (Notification.permission === 'denied')  { updateNotifStatus(); return; }
+            Notification.requestPermission().then(permission => {
+                updateNotifStatus();
+                if (permission === 'granted') {
+                    new Notification('✿ Retro Pomo', {
+                        body: 'Notifications enabled! You\'ll be alerted when sessions change.',
+                        icon: 'icon-192.png',
+                        tag: 'retro-pomo-init'
+                    });
+                }
+            });
+        }
+ 
+        function sendPushNotification(title, body) {
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') return;
+            // always send — browser shows it if tab is backgrounded,
+            // and we show it anyway since the in-app popup may be missed
+            try {
+                new Notification(title, {
+                    body,
+                    icon: 'icon-192.png',
+                    badge: 'icon-192.png',
+                    tag: 'retro-pomo',
+                    renotify: true,
+                    requireInteraction: false
+                });
+            } catch(e) {}
+        }
+ 
+        function resetTabTitle() {
+            document.title = 'RETRO POMODORO TIMER ★';
+        }
+ 
         function init() {
             timeLeft = focusTime;
             updateDisplay();
             updateSessionDots();
             setupListeners();
+            requestNotificationPermission();
+            updateNotifStatus();
             setTimeout(() => {
                 timerEl.style.textShadow = '0 0 40px #fef9c3';
                 setTimeout(() => updateDisplay(), 280);
