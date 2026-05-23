@@ -9,7 +9,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
+ 
         :root {
             --lavender:  #c084fc;
             --peach:     #fb923c;
@@ -21,9 +21,9 @@
             --surface:   #160f24;
             --surface2:  #1e1530;
         }
-
+ 
         * { margin:0; padding:0; box-sizing:border-box; }
-
+ 
         body {
             background: var(--bg);
             color: var(--mint);
@@ -37,7 +37,7 @@
             padding: 20px;
             position: relative;
         }
-
+ 
         /* ── PAGE STARFIELD ── */
         #page-stars {
             position: fixed;
@@ -46,18 +46,18 @@
             z-index: 0;
             overflow: hidden;
         }
-
+ 
         .pstar {
             position: absolute;
             border-radius: 0; /* pixel stars = square */
             animation: ptwinkle var(--dur) ease-in-out infinite var(--delay);
         }
-
+ 
         @keyframes ptwinkle {
             0%,100% { opacity: var(--dim); transform: scale(1); }
             50%      { opacity: var(--bright); transform: scale(1.6); }
         }
-
+ 
         /* ── REST OF STYLES (unchanged) ── */
         .crt-frame {
             width: 100%;
@@ -74,14 +74,14 @@
             z-index: 1;
             overflow: hidden;
         }
-
+ 
         .crt-screen {
             background: var(--surface);
             padding: 28px 32px;
             position: relative;
             border: 4px solid #2a1e3e;
         }
-
+ 
         .crt-screen::before {
             content: '';
             position: absolute;
@@ -95,12 +95,12 @@
             z-index: 3;
             animation: scan 8s linear infinite;
         }
-
+ 
         @keyframes scan {
             0%   { transform: translateY(-100%); }
             100% { transform: translateY(100%); }
         }
-
+ 
         .stars {
             position: absolute;
             top: 0; left: 0;
@@ -119,22 +119,22 @@
             0%,100% { opacity: 0.1; }
             50%      { opacity: 0.45; }
         }
-
+ 
         .layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0 28px;
-            align-items: start;
+            align-items: stretch;
             position: relative;
             z-index: 1;
         }
-
+ 
         .col-left  { grid-column: 1; display: flex; flex-direction: column; }
         .col-right { grid-column: 2; display: flex; flex-direction: column; gap: 16px; }
-
+ 
         .header-full { grid-column: 1 / -1; text-align: center; margin-bottom: 22px; }
         .footer-full  { grid-column: 1 / -1; text-align: center; font-size: 0.75rem; color: #6b5a8a; margin-top: 14px; }
-
+ 
         .title {
             font-family: 'Press Start 2P', cursive;
             font-size: 1.8rem;
@@ -142,9 +142,9 @@
             text-shadow: 0 0 8px #f9a8d4, 0 0 22px #c084fc88;
             letter-spacing: 4px;
         }
-
+ 
         .subtitle { font-size: 0.9rem; color: var(--lavender); opacity: 0.7; margin-top: 4px; }
-
+ 
         .tomato-icon {
             display: inline-block;
             font-size: 1.1rem;
@@ -156,7 +156,7 @@
             0%,100% { transform: translateY(0); }
             50%      { transform: translateY(-3px); }
         }
-
+ 
         .display {
             background: #0a0715;
             border: 4px solid #3b2d5e;
@@ -167,7 +167,7 @@
             position: relative;
             box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
         }
-
+ 
         .display::before, .display::after {
             content: '✦';
             position: absolute;
@@ -177,7 +177,7 @@
         }
         .display::before { top: 6px; left: 8px; }
         .display::after  { top: 6px; right: 8px; }
-
+ 
         #timer {
             font-family: 'VT323', monospace;
             font-size: 5.2rem;
@@ -186,7 +186,7 @@
             letter-spacing: 8px;
             line-height: 1;
         }
-
+ 
         #mode {
             font-family: 'Press Start 2P', cursive;
             font-size: 0.95rem;
@@ -195,7 +195,7 @@
             text-shadow: 0 0 10px #f9a8d4aa;
             min-height: 30px;
         }
-
+ 
         .controls {
             display: flex;
             gap: 10px;
@@ -203,7 +203,7 @@
             margin-bottom: 18px;
             flex-wrap: wrap;
         }
-
+ 
         button {
             font-family: 'Press Start 2P', cursive;
             font-size: 0.85rem;
@@ -218,18 +218,18 @@
         }
         button:hover  { background: var(--mint); color: var(--bg); border-color: var(--mint); }
         button:active { transform: translate(2px,2px); box-shadow: 0 0 0 1px #0d0a14; }
-
+ 
         #startBtn { color: var(--lavender); border-color: var(--lavender); }
         #startBtn:hover { background: var(--lavender); color: var(--bg); }
         #pauseBtn { color: var(--peach); border-color: var(--peach); }
         #pauseBtn:hover { background: var(--peach); color: var(--bg); }
-
-        .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-        .control-group { background: var(--surface2); padding: 12px; border: 2px solid #2e2250; }
-
+ 
+        .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; flex: 1; }
+ 
+        .control-group { background: var(--surface2); padding: 12px; border: 2px solid #2e2250; display: flex; flex-direction: column; justify-content: center; }
+ 
         label { display: block; font-size: 0.8rem; margin-bottom: 6px; color: #9d7ec9; letter-spacing: 1px; }
-
+ 
         input[type="number"] {
             width: 100%;
             background: #0a0715;
@@ -240,7 +240,7 @@
             padding: 8px;
             text-align: center;
         }
-
+ 
         .music-panel {
             background: var(--surface2);
             border: 3px solid #5b3f8e;
@@ -263,7 +263,7 @@
             font-size: 0.9rem;
             color: var(--lavender);
         }
-
+ 
         #musicToggle {
             width: 56px; height: 28px;
             background: #0a0715;
@@ -281,13 +281,13 @@
             transition: all 0.2s;
         }
         #musicToggle.active::after { transform: translateX(28px); background: var(--lavender); }
-
+ 
         input[type="range"] { width: 100%; accent-color: var(--lavender); }
-
+ 
         .sessions-panel { background: var(--surface2); border: 2px solid #2e2250; padding: 14px; }
-
+ 
         .session-dots { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-
+ 
         .session-dot {
             width: 18px; height: 18px;
             border: 2px solid #3b2d5e;
@@ -307,7 +307,7 @@
             font-size: 0.55rem;
             color: var(--bg);
         }
-
+ 
         .hints-panel {
             background: var(--surface2);
             border: 2px solid #2e2250;
@@ -367,7 +367,7 @@
             0%,100% { text-shadow: 0 0 20px #6ee7b7, 0 0 40px #6ee7b788; }
             50%      { text-shadow: 0 0 30px #6ee7b7, 0 0 70px #6ee7b7cc; }
         }
-
+ 
         .notification {
             position: fixed;
             top: 50%; left: 50%;
@@ -388,7 +388,7 @@
             0%   { transform: translate(-50%,-50%) scale(0.6); opacity:0; }
             100% { transform: translate(-50%,-50%) scale(1);   opacity:1; }
         }
-
+ 
         @media (max-width: 700px) {
             body { padding: 12px; }
             .crt-frame { border-width: 10px; }
@@ -414,10 +414,10 @@
     </style>
 </head>
 <body>
-
+ 
     <!-- page-level starfield -->
     <div id="page-stars"></div>
-
+ 
     <div class="crt-frame">
         <div class="crt-screen">
             <div class="stars" id="inner-stars"></div>
@@ -426,9 +426,9 @@
                     <div class="title">
                         <span class="tomato-icon">✿</span>RETRO POMO<span class="tomato-icon">✿</span>
                     </div>
-                    <div class="subtitle">WORK SESSION · DOING THE THING</div>
+                    <div class="subtitle">RETRO EDITION · FOCUS MODE v1.0</div>
                 </div>
-
+ 
                 <div class="col-left">
                     <div class="display">
                         <div id="timer">25:00</div>
@@ -450,7 +450,7 @@
                         </div>
                     </div>
                 </div>
-
+ 
                 <div class="col-right">
                     <div class="music-panel">
                         <div class="music-header">
@@ -460,7 +460,7 @@
                         <input type="range" id="volumeSlider" min="0" max="100" value="60">
                         <div style="font-size:0.7rem;text-align:center;margin-top:4px;color:#6b5a8a;">VOLUME</div>
                     </div>
-
+ 
                     <div class="sessions-panel">
                         <div style="display:flex;justify-content:space-between;align-items:center;">
                             <div style="font-size:0.8rem;color:#9d7ec9;">SESSIONS</div>
@@ -473,7 +473,7 @@
                         <div class="session-dots" id="sessionDots"></div>
                         <div style="font-size:0.7rem;color:#6b5a8a;margin-top:8px;" id="sessionCount">0 / 4 POMODOROS</div>
                     </div>
-
+ 
                     <div class="hints-panel">
                         <div class="hint-title">KEYBOARD</div>
                         <div>SPACE / K — play/pause</div>
@@ -481,12 +481,12 @@
                         <div>M — toggle music</div>
                     </div>
                 </div>
-
+ 
                 <div class="footer-full">✦ press start · take breaks · rewind time ✦</div>
             </div>
         </div>
     </div>
-
+ 
     <!-- Completion overlay -->
     <div class="completion-overlay" id="completionOverlay">
         <div class="completion-stars">✿ ✦ ✿</div>
@@ -500,7 +500,7 @@
     </div>
  
     <div id="notification" class="notification"></div>
-
+ 
     <script>
         /* ── PAGE STARFIELD ── */
         (function() {
@@ -527,7 +527,7 @@
                 container.appendChild(s);
             }
         })();
-
+ 
         /* ── INNER CRT STARS ── */
         (function() {
             const container = document.getElementById('inner-stars');
@@ -544,7 +544,7 @@
                 container.appendChild(s);
             }
         })();
-
+ 
         /* ── APP ── */
         const timerEl      = document.getElementById('timer');
         const modeEl       = document.getElementById('mode');
@@ -558,7 +558,7 @@
         const notification = document.getElementById('notification');
         const sessionDots  = document.getElementById('sessionDots');
         const sessionCount = document.getElementById('sessionCount');
-
+ 
         let focusTime = 25 * 60, breakTime = 5 * 60;
         let timeLeft = focusTime;
         let isRunning = false, isFocusMode = true;
@@ -569,7 +569,7 @@
         let masterGain = null;
         let completedSessions = 0;
         let totalSessions = 4;
-
+ 
         function initAudio() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -578,10 +578,10 @@
                 masterGain.connect(audioContext.destination);
             }
         }
-
+ 
         const ARP_NOTES  = [130.81,155.56,174.61,196.00,233.08,261.63,311.13,349.23];
         const BASS_NOTES = [65.41,77.78,87.31,98.00];
-
+ 
         function startSynth() {
             initAudio();
             if (musicNodes) return;
@@ -650,23 +650,23 @@
             }, 125);
             musicNodes.push({ stop: () => clearInterval(hInt) });
         }
-
+ 
         function stopSynth() {
             if (!musicNodes) return;
             musicNodes.forEach(n => { try { if(n.stop) n.stop(); if(n.disconnect) n.disconnect(); } catch(e){} });
             musicNodes = null;
         }
-
+ 
         function toggleMusic() {
             isMusicPlaying = !isMusicPlaying;
             musicToggle.classList.toggle('active', isMusicPlaying);
             if (isMusicPlaying) startSynth(); else stopSynth();
         }
-
+ 
         function updateVolume() {
             if (masterGain) masterGain.gain.value = volumeSlider.value / 100 * 0.35;
         }
-
+ 
         function playRetroBeep() {
             initAudio();
             const now = audioContext.currentTime;
@@ -689,17 +689,19 @@
                 o2.start(); o2.stop(audioContext.currentTime + 0.7);
             }, 180);
         }
-
+ 
         function parseHMM(val) {
             const parts = val.trim().split(':');
             if (parts.length === 2) {
                 const h = parseInt(parts[0]) || 0;
                 const m = parseInt(parts[1]) || 0;
-                return (h * 3600) + (m * 60);
+                const total = (h * 3600) + (m * 60);
+                return total > 0 ? total : 60;
             }
-            return (parseInt(val) || 25) * 60;
+            const mins = parseInt(val) || 1;
+            return mins * 60;
         }
-
+ 
         function formatTime(s) {
             const h   = Math.floor(s / 3600);
             const m   = Math.floor((s % 3600) / 60);
@@ -709,7 +711,7 @@
             }
             return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
         }
-
+ 
         function updateDisplay() {
             timerEl.textContent = formatTime(timeLeft);
             if (isFocusMode) {
@@ -721,11 +723,20 @@
                 modeEl.style.color = "#7dd3fc";
                 modeEl.style.textShadow = "0 0 10px #7dd3fc88";
             }
+            if (isRunning) {
+                document.title = `${isFocusMode ? '🍅' : '☕'} ${formatTime(timeLeft)} — RETRO POMO`;
+            }
         }
-
+ 
+        function resetTabTitle() {
+            document.title = 'RETRO POMODORO TIMER ★';
+        }
+ 
         function showCompletionOverlay() {
             clearInterval(timerInterval);
+            timerInterval = null;
             isRunning = false;
+            endTime = null;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
             document.getElementById('completionCount').textContent = totalSessions;
@@ -734,7 +745,7 @@
             setTimeout(() => playRetroBeep(), 400);
             setTimeout(() => playRetroBeep(), 800);
         }
-
+ 
         function updateSessionDots() {
             const container = document.getElementById('sessionDots');
             container.innerHTML = '';
@@ -748,7 +759,7 @@
                 setTimeout(() => showCompletionOverlay(), 400);
             }
         }
-
+ 
         function showNotification(text, color) {
             notification.textContent = text;
             notification.style.borderColor = color;
@@ -756,7 +767,7 @@
             notification.style.display = 'block';
             setTimeout(() => { notification.style.display = 'none'; }, 2200);
         }
-
+ 
         function switchMode() {
             playRetroBeep();
             isFocusMode = !isFocusMode;
@@ -766,48 +777,64 @@
             } else {
                 completedSessions++;
                 updateSessionDots();
-                // if completion overlay shown, don't start break
                 if (completedSessions >= totalSessions) return;
                 timeLeft = breakTime;
                 showNotification("✦ BREAK TIME!", "#7dd3fc");
             }
             updateDisplay();
         }
-
+ 
+        let endTime = null;
+ 
         function tick() {
-            if (timeLeft > 0) { timeLeft--; updateDisplay(); }
-            else {
+            const remaining = Math.round((endTime - Date.now()) / 1000);
+            if (remaining > 0) {
+                timeLeft = remaining;
+                updateDisplay();
+            } else {
+                timeLeft = 0;
+                updateDisplay();
                 clearInterval(timerInterval);
+                timerInterval = null;
                 isRunning = false;
                 switchMode();
                 setTimeout(() => { if (!isRunning) startTimer(); }, 1800);
             }
         }
-
+ 
         function startTimer() {
             if (isRunning) return;
             isRunning = true;
+            endTime = Date.now() + timeLeft * 1000;
             startBtn.style.display = 'none';
             pauseBtn.style.display = 'inline-block';
-            timerInterval = setInterval(tick, 1000);
+            timerInterval = setInterval(tick, 200);
         }
-
+ 
         function pauseTimer() {
             clearInterval(timerInterval);
+            timerInterval = null;
             isRunning = false;
+            timeLeft = Math.max(0, Math.round((endTime - Date.now()) / 1000));
+            endTime = null;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
+            resetTabTitle();
+            updateDisplay();
         }
-
+ 
         function resetTimer() {
             clearInterval(timerInterval);
+            timerInterval = null;
             isRunning = false;
+            endTime = null;
             startBtn.style.display = 'inline-block';
             pauseBtn.style.display = 'none';
+            resetTabTitle();
             timeLeft = isFocusMode ? focusTime : breakTime;
             updateDisplay();
         }
-
+ 
         function applySettings() {
             focusTime = parseHMM(focusInput.value) || 25 * 60;
             breakTime = parseHMM(breakInput.value) || 5  * 60;
@@ -817,7 +844,7 @@
             if (!isRunning) resetTimer();
             updateSessionDots();
         }
-
+ 
         function setupListeners() {
             startBtn.addEventListener('click', startTimer);
             pauseBtn.addEventListener('click', pauseTimer);
@@ -839,8 +866,44 @@
                 if (e.key==='r'||e.key==='R') resetTimer();
                 if (e.key==='m'||e.key==='M') toggleMusic();
             });
+ 
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && isRunning && endTime) {
+                    const remaining = Math.round((endTime - Date.now()) / 1000);
+                    if (remaining <= 0) {
+                        timeLeft = 0;
+                        updateDisplay();
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        isRunning = false;
+                        switchMode();
+                        setTimeout(() => { if (!isRunning) startTimer(); }, 1800);
+                    } else {
+                        timeLeft = remaining;
+                        updateDisplay();
+                    }
+                }
+            });
+            // Re-sync when returning from another app/tab
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && isRunning && endTime) {
+                    const remaining = Math.round((endTime - Date.now()) / 1000);
+                    if (remaining <= 0) {
+                        timeLeft = 0;
+                        updateDisplay();
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        isRunning = false;
+                        switchMode();
+                        setTimeout(() => { if (!isRunning) startTimer(); }, 1800);
+                    } else {
+                        timeLeft = remaining;
+                        updateDisplay();
+                    }
+                }
+            });
         }
-
+ 
         function init() {
             timeLeft = focusTime;
             updateDisplay();
@@ -851,7 +914,7 @@
                 setTimeout(() => updateDisplay(), 280);
             }, 800);
         }
-
+ 
         window.onload = init;
     </script>
 </body>
